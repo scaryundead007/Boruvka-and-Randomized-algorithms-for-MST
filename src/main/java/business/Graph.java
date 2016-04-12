@@ -27,7 +27,8 @@ public class Graph {
 
     public Graph(int v, int e) {
         V = v;
-        E = e;
+        this.allVerticesWithEdges = new HashMap<>();
+        this.allEdges = new ArrayList<>();
         for(int i = 0 ; i < e ; ++i){
             int[] verticesId = Randomizer.getDiffRandoms(0,v);
             int weight = Randomizer.getWeight();
@@ -89,7 +90,7 @@ public class Graph {
      * @return
      */
     private boolean checkVertex(int vertex){
-        return (vertex > 0 && vertex < V);
+        return (vertex >= 0 && vertex < V);
     }
 
     @Override
@@ -97,8 +98,19 @@ public class Graph {
         String intro = "Graph{" +
                 "V=" + V +
                 ", E=" + E +
-                '}';
-        //faire l'affichage
+                "}\n";
+        for(Map.Entry<Integer,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+            intro += entry.getKey() + " : ";
+            for(Edge e : entry.getValue()){
+                intro += e.toString() + " ";
+            }
+            intro += "\n";
+        }
         return intro;
+    }
+
+    public static void main(String[] args) {
+        Graph g = new Graph(5,5);
+        System.out.println(g.toString());
     }
 }

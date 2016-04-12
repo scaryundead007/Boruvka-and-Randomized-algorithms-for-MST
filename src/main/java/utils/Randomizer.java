@@ -20,7 +20,7 @@ public class Randomizer {
     }
 
     public static int[] getDiffRandoms(int beginning, int end){
-        if(beginning - end <= 1)
+        if(end - beginning  <= 1)
             return null;
         int nb1 = 0;
         int nb2 = 0;
