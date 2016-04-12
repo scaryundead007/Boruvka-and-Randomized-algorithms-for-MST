@@ -72,6 +72,22 @@ public class Graph {
     }
 
     /**
+     * remove the edges in the graph
+     * @param edges
+     */
+    public void deleteListEdges(List<Edge> edges){
+        for(Edge e : edges){
+            allEdges.remove(e);
+            for(Map.Entry<Integer,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+                entry.getValue().remove(e);
+            }
+            E--;
+        }
+
+
+    }
+
+    /**
      * return the edges connected to the vertice
      * @param vertice
      * @return
@@ -93,6 +109,54 @@ public class Graph {
         return (vertex >= 0 && vertex < V);
     }
 
+    /**
+     * delete edges with the same endpoint (v == w)
+     */
+    public void deleteLoopEdges(){
+        //suppression du graphe
+        for(Map.Entry<Integer,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+            Iterator<Edge> it = entry.getValue().iterator();
+            while(it.hasNext()){
+                Edge e = it.next();
+                if(e.either() == e.other(e.either()))
+                    it.remove();
+            }
+        }
+        //suppression de la list
+        Iterator<Edge> it = allEdges.iterator();
+        while(it.hasNext()){
+            Edge e = it.next();
+            if(e.either() == e.other(e.either())){
+                it.remove();
+                E--;
+            }
+        }
+    }
+
+    /**
+     * Remove an edge if another one connect the same endpoint with a lower weight
+     */
+    public void deleteMultipleEdgesBetweenVertices(){
+        List<Edge> toRm = new ArrayList<>();
+        for (int i = 0; i < allEdges.size(); i++) {
+            if(toRm.contains(i)) continue;
+            for (int j = i+1; j < allEdges.size(); j++) {
+                if(allEdges.get(i).sameEdge(allEdges.get(j))) {
+                    System.out.println(allEdges.get(i) + " / " + allEdges.get(j));
+                    if (allEdges.get(i).getWeight() < allEdges.get(j).getWeight()) {
+                        toRm.add(allEdges.get(j));
+                    } else if (allEdges.get(i).getWeight() > allEdges.get(j).getWeight()) {
+                        toRm.add(allEdges.get(i));
+                        break;
+                    }
+                }
+            }
+        }
+        for(Edge e : toRm)
+            System.out.println(e);
+        deleteListEdges(toRm);
+    }
+
     @Override
     public String toString() {
         String intro = "Graph{" +
@@ -111,6 +175,15 @@ public class Graph {
 
     public static void main(String[] args) {
         Graph g = new Graph(5,5);
+        g.addEdge(new Edge(4,4,7));
+        //System.out.println(g.toString());
+        g.deleteLoopEdges();
+        //System.out.println(g.toString());
+        g.addEdge(new Edge(4,3,7));
+        g.addEdge(new Edge(3,4,6));
+        g.addEdge(new Edge(4,3,5));
+        System.out.println(g.toString());
+        g.deleteMultipleEdgesBetweenVertices();
         System.out.println(g.toString());
     }
 }
