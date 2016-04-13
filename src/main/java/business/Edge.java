@@ -8,12 +8,16 @@ public class Edge implements Comparable<Edge> {
     //VW sont des ints qui permettent de representer les sommets
     private Vertice v;
     private Vertice w;
+    private Vertice initV;
+    private Vertice initW;
     //Poids de l'arete
     private int weight;
 
     public Edge(Vertice v, Vertice w, int weight) {
         this.v = v;
         this.w = w;
+        this.initV = v;
+        this.initW = w;
         this.weight = weight;
     }
 
@@ -42,6 +46,14 @@ public class Edge implements Comparable<Edge> {
             return new Vertice(-1);
     }
 
+    public void setV(Vertice v) {
+        this.v = v;
+    }
+
+    public void setW(Vertice w) {
+        this.w = w;
+    }
+
     public boolean sameEdge(Edge edge){
         if(v.equals(edge.either()) && w.equals(edge.other(edge.either())))
             return true;
@@ -58,6 +70,14 @@ public class Edge implements Comparable<Edge> {
             return 1;
         else
             return  0;
+    }
+
+    public String toStringInit(){
+        return "{" +
+                "v=" + initV.toString() +
+                ", w=" + initW.toString() +
+                ", weight=" + weight +
+                '}';
     }
 
     @Override
