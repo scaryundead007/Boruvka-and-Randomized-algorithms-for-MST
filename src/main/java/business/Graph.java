@@ -11,7 +11,7 @@ public class Graph {
 
     private int V; //nb sommet
     private int E; //nb arete
-    private Map<Integer, List<Edge>> allVerticesWithEdges; //ensemble des arretes du graphe en fonction du sommet
+    private Map<Vertice, List<Edge>> allVerticesWithEdges; //ensemble des arretes du graphe en fonction du sommet
     private List<Edge> allEdges;
 
     /**
@@ -32,7 +32,7 @@ public class Graph {
         for(int i = 0 ; i < e ; ++i){
             int[] verticesId = Randomizer.getDiffRandoms(0,v);
             int weight = Randomizer.getWeight();
-            Edge newEdge = new Edge(verticesId[0], verticesId[1], weight);
+            Edge newEdge = new Edge(new Vertice(verticesId[0]), new Vertice(verticesId[1]), weight);
             addEdge(newEdge);
         }
     }
@@ -46,25 +46,27 @@ public class Graph {
     }
 
     public void addEdge(Edge e) {
-        int v = e.either();
-        int w = e.other(v);
+        Vertice v = e.either();
+        Vertice w = e.other(v);
         if(checkVertex(v) && checkVertex(w)){
             //si le sommet contient deja une arrete on met a jour la liste
-            if(allVerticesWithEdges.get(new Integer(v)) != null)
-                allVerticesWithEdges.get(new Integer(v)).add(e);
+            if(allVerticesWithEdges.get(v) != null)
+                allVerticesWithEdges.get(v).add(e);
             //sinon on crée une nouvelle entrée dans la map
             else {
+                //System.out.println(allVerticesWithEdges.get(v));
                 List<Edge> edges = new ArrayList<>();
                 edges.add(e);
-                allVerticesWithEdges.put(new Integer(v), edges);
+                allVerticesWithEdges.put(v, edges);
+                //System.out.println(allVerticesWithEdges.get(v));
             }
-            if(allVerticesWithEdges.get(new Integer(w)) != null)
-                allVerticesWithEdges.get(new Integer(w)).add(e);
+            if(allVerticesWithEdges.get(w) != null)
+                allVerticesWithEdges.get(w).add(e);
                 //sinon on crée une nouvelle entrée dans la map
             else {
                 List<Edge> edges = new ArrayList<>();
                 edges.add(e);
-                allVerticesWithEdges.put(new Integer(w), edges);
+                allVerticesWithEdges.put(w, edges);
             }
             allEdges.add(e);
             E++;
@@ -78,7 +80,7 @@ public class Graph {
     public void deleteListEdges(List<Edge> edges){
         for(Edge e : edges){
             allEdges.remove(e);
-            for(Map.Entry<Integer,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+            for(Map.Entry<Vertice,List<Edge>> entry : allVerticesWithEdges.entrySet()){
                 entry.getValue().remove(e);
             }
             E--;
@@ -105,8 +107,8 @@ public class Graph {
      * @param vertex
      * @return
      */
-    private boolean checkVertex(int vertex){
-        return (vertex >= 0 && vertex < V);
+    private boolean checkVertex(Vertice vertex){
+        return (vertex.getNb() >= 0 && vertex.getNb() < V);
     }
 
     /**
@@ -114,7 +116,7 @@ public class Graph {
      */
     public void deleteLoopEdges(){
         //suppression du graphe
-        for(Map.Entry<Integer,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+        for(Map.Entry<Vertice,List<Edge>> entry : allVerticesWithEdges.entrySet()){
             Iterator<Edge> it = entry.getValue().iterator();
             while(it.hasNext()){
                 Edge e = it.next();
@@ -163,8 +165,8 @@ public class Graph {
                 "V=" + V +
                 ", E=" + E +
                 "}\n";
-        for(Map.Entry<Integer,List<Edge>> entry : allVerticesWithEdges.entrySet()){
-            intro += entry.getKey() + " : ";
+        for(Map.Entry<Vertice,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+            intro += entry.getKey().toString() + " : ";
             for(Edge e : entry.getValue()){
                 intro += e.toString() + " ";
             }
@@ -175,13 +177,13 @@ public class Graph {
 
     public static void main(String[] args) {
         Graph g = new Graph(5,5);
-        g.addEdge(new Edge(4,4,7));
-        //System.out.println(g.toString());
+        g.addEdge(new Edge(new Vertice(4),new Vertice(4),7));
+        System.out.println(g.toString());
         g.deleteLoopEdges();
-        //System.out.println(g.toString());
-        g.addEdge(new Edge(4,3,7));
-        g.addEdge(new Edge(3,4,6));
-        g.addEdge(new Edge(4,3,5));
+        System.out.println(g.toString());
+        g.addEdge(new Edge(new Vertice(4),new Vertice(3),7));
+        g.addEdge(new Edge(new Vertice(3),new Vertice(4),6));
+        g.addEdge(new Edge(new Vertice(4),new Vertice(3),5));
         System.out.println(g.toString());
         g.deleteMultipleEdgesBetweenVertices();
         System.out.println(g.toString());

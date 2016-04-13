@@ -6,12 +6,12 @@ package business;
 public class Edge implements Comparable<Edge> {
 
     //VW sont des ints qui permettent de representer les sommets
-    private int v;
-    private int w;
+    private Vertice v;
+    private Vertice w;
     //Poids de l'arete
     private int weight;
 
-    public Edge(int v, int w, int weight) {
+    public Edge(Vertice v, Vertice w, int weight) {
         this.v = v;
         this.w = w;
         this.weight = weight;
@@ -25,7 +25,7 @@ public class Edge implements Comparable<Edge> {
      * Retourne un des sommets de l'arete. Arbitrairement j'ai choisi v
      * @return
      */
-    public int either() {
+    public Vertice either() {
         return v;
     }
 
@@ -33,19 +33,19 @@ public class Edge implements Comparable<Edge> {
      * Retourne l'autre sommet de l'arete par rapport a celui passé en paramètre
      * @return -1 => erreur
      */
-    public int other(int endPoint) {
-        if (endPoint == v)
+    public Vertice other(Vertice endPoint) {
+        if (endPoint.equals(v))
             return w;
-        else if (endPoint == w)
+        else if (endPoint.equals(w))
             return v;
         else
-            return -1;
+            return new Vertice(-1);
     }
 
     public boolean sameEdge(Edge edge){
-        if(v == edge.either() && w == edge.other(edge.either()))
+        if(v.equals(edge.either()) && w.equals(edge.other(edge.either())))
             return true;
-        else if (w == edge.either() && v == edge.other(edge.either()))
+        else if (w.equals(edge.either()) && v.equals(edge.other(edge.either())))
             return true;
         return false;
     }
@@ -63,8 +63,8 @@ public class Edge implements Comparable<Edge> {
     @Override
     public String toString() {
         return "{" +
-                "v=" + v +
-                ", w=" + w +
+                "v=" + v.toString() +
+                ", w=" + w.toString() +
                 ", weight=" + weight +
                 '}';
     }
@@ -83,12 +83,12 @@ public class Edge implements Comparable<Edge> {
     }
 
     public static void main(String[] args) {
-        Edge e1 = new Edge(3,4,10);
-        Edge e2 = new Edge(3,4,7);
+        Edge e1 = new Edge(new Vertice(3),new Vertice(4),10);
+        Edge e2 = new Edge(new Vertice(3),new Vertice(4),7);
         System.out.println("true = " + e1.equals(e2));
-        Edge e3 = new Edge(4,3,12);
+        Edge e3 = new Edge(new Vertice(4), new Vertice(3),12);
         System.out.println("true = " + e1.equals(e3));
-        Edge e4 = new Edge(4,8,10);
+        Edge e4 = new Edge(new Vertice(4), new Vertice(8),10);
         System.out.println("false = " + e1.equals(e4));
     }
 }
