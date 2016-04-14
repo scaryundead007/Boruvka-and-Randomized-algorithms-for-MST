@@ -29,27 +29,47 @@ public class BoruvkaMST {
     public void processAlgorithm(){
         //tant que graphe n'est pas constitué d'un sommet
         while(graphWithAllEdges.getV() != 1){
-            //on detruit les boucles (meme endpoint)
-            graphWithAllEdges.deleteLoopEdges();
-            //on detruit les aretes multiples
-            graphWithAllEdges.deleteMultipleEdgesBetweenVertices();
-            List<Vertice> allComponents = graphWithAllEdges.getAllVertices();
-            Set<Edge> miniEdges = new HashSet<>();
-            for(Vertice v : allComponents){
-                Edge e = graphWithAllEdges.minimumWeightForVertice(v);
-                miniEdges.add(e);
-            }
-            for(Edge e : miniEdges){
-                System.out.println(e);
-            }
-            System.out.println("Concat");
-            for(Edge e : miniEdges){
-                mst.addEdge(e);
-                weightMst += e.getWeight();
-                graphWithAllEdges.mergeVertices(e);
-            }
-            System.out.println(graphWithAllEdges);
+            weightMst += applyBoruvkaStep(graphWithAllEdges, mst);
         }
+    }
+
+    /**
+     * Apply one step of the boruvka algorithme on the graph
+     * @param g
+     */
+    public static int applyBoruvkaStep(Graph g, Graph mst) {
+       // System.out.println(g);
+        int weight = 0;
+        //on detruit les boucles (meme endpoint)
+        g.deleteLoopEdges();
+        //on detruit les aretes multiples
+        g.deleteMultipleEdgesBetweenVertices();
+        List<Vertice> allComponents = g.getAllVertices();
+        Set<Edge> miniEdges = new HashSet<>();
+        //System.out.println(allComponents);
+        //System.out.println(g);
+       // g.updateV();
+       // System.out.println(g.getV());
+        for (Vertice v : allComponents) {
+            Edge e = g.minimumWeightForVertice(v);
+            miniEdges.add(e);
+        }
+        //System.out.println(miniEdges);
+        //System.out.println("size : " + miniEdges.size() + " next : " + miniEdges.iterator().next());
+        for (Edge e : miniEdges) {
+                //System.out.println(e);
+                mst.addEdge(e);
+                weight += e.getWeight();
+                g.mergeVertices(e);
+        }
+        return weight;
+    }
+
+    public static void cleanGraph(Graph g){
+        //on detruit les boucles (meme endpoint)
+        g.deleteLoopEdges();
+        //on detruit les aretes multiples
+        g.deleteMultipleEdgesBetweenVertices();
     }
 
     public Graph getMst() {

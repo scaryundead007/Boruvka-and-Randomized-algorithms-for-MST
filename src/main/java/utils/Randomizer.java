@@ -31,7 +31,11 @@ public class Randomizer {
         return new int[]{nb1, nb2};
     }
 
+    public static boolean takeItOrNot(){
+        return (Math.random() > 0.5);
+    }
+
     public static void main(String[] args) {
-        System.out.println(getWeight());
+        System.out.println(takeItOrNot());
     }
 }

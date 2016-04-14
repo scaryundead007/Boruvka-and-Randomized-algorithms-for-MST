@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Created by lucas on 12/04/16.
  */
-public class Graph {
+public class Graph implements Cloneable {
 
     private int V; //nb sommet
     private int E; //nb arete
@@ -46,10 +46,25 @@ public class Graph {
         return E;
     }
 
+    @Override
+    public Graph clone() throws CloneNotSupportedException {
+        Graph graph = new Graph(V);
+        graph.setE(E);
+        Map<Vertice, List<Edge>> newMap = new HashMap<>(allVerticesWithEdges);
+        /*for(Map.Entry<Vertice,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+            newMap.put(entry.getKey().clone())
+        }*/
+        graph.setAllVerticesWithEdges(newMap);
+        List<Edge> newEdges = new ArrayList<>(allEdges);
+        //newEdges.addAll(allEdges);
+        graph.setAllEdges(newEdges);
+        return graph;
+    }
+
     public void addEdge(Edge e) {
         Vertice v = e.either();
         Vertice w = e.other(v);
-        if(checkVertex(v) && checkVertex(w)){
+        //if(checkVertex(v) && checkVertex(w)){
             //si le sommet contient deja une arrete on met a jour la liste
             if(allVerticesWithEdges.get(v) != null)
                 allVerticesWithEdges.get(v).add(e);
@@ -71,7 +86,7 @@ public class Graph {
             }
             allEdges.add(e);
             E++;
-        }
+        //}
     }
 
     /**
@@ -188,6 +203,7 @@ public class Graph {
     public Edge minimumWeightForVertice(Vertice v){
         List<Edge> edgesForVertice = allVerticesWithEdges.get(v);
         Edge min = null;
+       // System.out.println("nb sommet : " + v.getNb() + "size" + edgesForVertice.size());
         for(Edge e : edgesForVertice){
             if(min == null || e.getWeight() < min.getWeight()){
                 min = e;
@@ -203,7 +219,6 @@ public class Graph {
     public void mergeVertices(Edge e){
         Vertice finalVert = e.either();
         Vertice rmvert = e.other(finalVert);
-        System.out.println(e);
         for(Map.Entry<Vertice,List<Edge>> entry : allVerticesWithEdges.entrySet()){
             if(entry.getKey().equals(finalVert)){
                 entry.getValue().addAll(allVerticesWithEdges.get(rmvert));
@@ -218,6 +233,30 @@ public class Graph {
         }
         allVerticesWithEdges.remove(rmvert);
         V--;
+    }
+
+    /**
+     * Update the number of vertice
+     */
+    public void updateV(){
+        int cpt = 0;
+        for(Map.Entry<Vertice,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+            ++cpt;
+        }
+        V = cpt;
+    }
+
+    /**
+     * Return the weight of the heaviest edge
+     * @return
+     */
+    public int getMaxWeight(){
+        Edge max = new Edge(new Vertice(0), new Vertice(0),0);
+        for(Edge e : allEdges){
+            if(max.getWeight() < e.getWeight())
+                max = e;
+        }
+        return max.getWeight();
     }
 
     @Override
@@ -236,6 +275,33 @@ public class Graph {
         return intro;
     }
 
+    public String toStringInit(){
+        String intro = "Graph{" +
+                "V=" + V +
+                ", E=" + E +
+                "}\n";
+        for(Map.Entry<Vertice,List<Edge>> entry : allVerticesWithEdges.entrySet()){
+            intro += entry.getKey().toString() + " : ";
+            for(Edge e : entry.getValue()){
+                intro += e.toStringInit() + " ";
+            }
+            intro += "\n";
+        }
+        return intro;
+    }
+
+    public void setE(int e) {
+        E = e;
+    }
+
+    public void setAllVerticesWithEdges(Map<Vertice, List<Edge>> allVerticesWithEdges) {
+        this.allVerticesWithEdges = allVerticesWithEdges;
+    }
+
+    public void setAllEdges(List<Edge> allEdges) {
+        this.allEdges = allEdges;
+    }
+
     public static void main(String[] args) {
         //Graph g = new Graph(5,5);
         //g.addEdge(new Edge(new Vertice(4),new Vertice(4),7));
@@ -251,13 +317,17 @@ public class Graph {
         System.out.println(g.toString());
         g.mergeVertices(e);
         System.out.println(g.toString());*/
-        Graph bis = new Graph(4);
+        Graph bis = new Graph(6);
         bis.addEdge(new Edge(new Vertice(0), new Vertice(1), 10));
         bis.addEdge(new Edge(new Vertice(0), new Vertice(2), 12));
         bis.addEdge(new Edge(new Vertice(0), new Vertice(3), 9));
         bis.addEdge(new Edge(new Vertice(1), new Vertice(3), 10));
         bis.addEdge(new Edge(new Vertice(1), new Vertice(2), 8));
-        bis.addEdge(new Edge(new Vertice(2), new Vertice(3), 7));
+        bis.addEdge(new Edge(new Vertice(2), new Vertice(3), 11));
+        bis.addEdge(new Edge(new Vertice(4), new Vertice(0), 7));
+        bis.addEdge(new Edge(new Vertice(4), new Vertice(2), 6));
+        bis.addEdge(new Edge(new Vertice(3), new Vertice(5), 5));
+        bis.addEdge(new Edge(new Vertice(1), new Vertice(5), 3));
        // System.out.println(bis.toString());
         BoruvkaMST b = new BoruvkaMST(bis);
         b.processAlgorithm();
