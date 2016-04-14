@@ -3,6 +3,7 @@ package business;
 import boruvka.BoruvkaMST;
 import utils.Randomizer;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -35,6 +36,52 @@ public class Graph implements Cloneable {
             int weight = Randomizer.getWeight();
             Edge newEdge = new Edge(new Vertice(verticesId[0]), new Vertice(verticesId[1]), weight);
             addEdge(newEdge);
+        }
+    }
+
+    public Graph(String path) {
+        try {
+            File fichier = new File(System.getProperty("user.dir") + "/" + path);
+            FileReader fichierLire = new FileReader(fichier);
+            BufferedReader buff = new BufferedReader(fichierLire);
+            try {
+                String l = buff.readLine();
+                String[] s = l.split(";");
+                this.V = s.length;
+                this.E = 0;
+                this.allEdges = new ArrayList<>();
+                this.allVerticesWithEdges = new HashMap<>();
+
+                // Initialise le tableau
+                int[][] graphe = new int[s.length][s.length];
+                int i = 0, j = 0;
+
+                l = buff.readLine();
+
+                // Tant qu'il y a des lignes dans le fichier
+                while(l != null) {
+                    s = l.split(";"); // On découpe avec le ;
+
+                    // Pour chaque poids
+                    for(int ind = 0 ; ind <= i ; ++ind ) {
+                        int weight = Integer.parseInt(s[ind]);
+
+                        if(weight != 0) {
+                            Edge e = new Edge(new Vertice(i), new Vertice(ind), weight);
+                            addEdge(e);
+                        }
+                    }
+
+                    i++;
+
+                    l = buff.readLine();
+                }
+
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -329,13 +376,17 @@ public class Graph implements Cloneable {
         bis.addEdge(new Edge(new Vertice(3), new Vertice(5), 5));
         bis.addEdge(new Edge(new Vertice(1), new Vertice(5), 3));
        // System.out.println(bis.toString());
-        BoruvkaMST b = new BoruvkaMST(bis);
+
+        //System.out.println(b.getWeightMst());
+        Graph fromFile = new Graph("graphe.txt");
+        System.out.println(fromFile);
+        BoruvkaMST b = new BoruvkaMST(fromFile);
         b.processAlgorithm();
-        System.out.println(bis.toString());
+        //System.out.println(bis.toString());
         Graph mst =  b.getMst();
         for(Edge e : mst.getAllEdges()){
             System.out.println(e.toStringInit());
         }
-        System.out.println(b.getWeightMst());
+
     }
 }

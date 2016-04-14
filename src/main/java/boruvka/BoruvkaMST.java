@@ -28,9 +28,12 @@ public class BoruvkaMST {
      */
     public void processAlgorithm(){
         //tant que graphe n'est pas constitué d'un sommet
+        int i = 0;
         while(graphWithAllEdges.getV() != 1){
             weightMst += applyBoruvkaStep(graphWithAllEdges, mst);
+            i++;
         }
+        System.out.println("nombre d'itérations : " + i);
     }
 
     /**

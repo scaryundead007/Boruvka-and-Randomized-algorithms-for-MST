@@ -45,7 +45,7 @@ public class RandomizedAlgo {
         /*get subgraph of mst*/
         Graph subGraph = new Graph(g.getV());
         while(subGraph.getE() == 0 ){
-            for(Edge e : copyG.getAllEdges()){
+            for(Edge e : g.getAllEdges()){
                 if(Randomizer.takeItOrNot())
                     subGraph.addEdge(e);
             }
@@ -58,22 +58,25 @@ public class RandomizedAlgo {
         f1.updateV();
         Graph g2 = new Graph(g.getV());
         int maxWeight = f1.getMaxWeight();
-        for(Edge e : copyG.getAllEdges()){
-            if(e.getWeight() < maxWeight)
+        for(Edge e : g.getAllEdges()){
+            if(e.getWeight() <= maxWeight)
                 g2.addEdge(e);
         }
         g2.updateV();
-        if(g2.getV() == 0) {
+        /*if(g2.getV() == 0) {
             return afterBoruvka;
-        }
+        }*/
         Graph f2 = new Graph(subGraph.getV());
         System.out.println("max weight " + maxWeight + " g2 " + g2);
         f2 = processRandomizedAlgo(g2);
         f2.updateV();
         System.out.println("apres f2");
         Graph union = new Graph(g.getV());
-        for(Edge e : f2.getAllEdges())
+        for(Edge e : f2.getAllEdges()){
             union.addEdge(e);
+            System.out.println("f2"+e.toStringInit());
+        }
+
         for(Edge e : afterBoruvka.getAllEdges())
             union.addEdge(e);
         return union;
@@ -149,7 +152,8 @@ public class RandomizedAlgo {
         bis.addEdge(new Edge(new Vertice(3), new Vertice(5), 5));
         bis.addEdge(new Edge(new Vertice(1), new Vertice(5), 3));
         // System.out.println(bis.toString());
-        RandomizedAlgo b = new RandomizedAlgo(bis);
+        Graph fromFile = new Graph("graphe.txt");
+        RandomizedAlgo b = new RandomizedAlgo(fromFile);
        // processRandomizedAlgo(bis);
        // Graph clone = bis.clone();
        // System.out.println(bis);
@@ -157,7 +161,7 @@ public class RandomizedAlgo {
        // System.out.println(processRandomizedAlgo(bis).toStringInit());
         //processRandomizedAlgo(bis);
        // Graph mst =  b.getMst();
-        for(Edge e : processRandomizedAlgo(bis).getAllEdges()){
+        for(Edge e : processRandomizedAlgo(fromFile).getAllEdges()){
             System.out.println(e.toStringInit());
         }
         //System.out.println(b.getWeightMst());*/
