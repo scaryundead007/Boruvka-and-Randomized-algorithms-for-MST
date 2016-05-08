@@ -55,6 +55,9 @@ class Kruskal:
       res += str(c_edge) + " "
     return res
 
+  def getName(self):
+    return "kruskal"
+
   def run(self):
     l_kruskal = []
     l_components = [ [x] for x in range(len(self.m_vertices)) ]

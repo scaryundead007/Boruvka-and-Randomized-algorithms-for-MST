@@ -38,34 +38,64 @@ def compare(p_adj):
       return False
     if l_e1.m_weight != l_e2.m_weight:
       return False
+
+  return True
+
+  l_g2 = RandMstTests(p_adj)
+  l_r2 = l_g2.run()
+  l_r2 = sorted(l_r2, key=lambda x:x.m_weight)
+
+  if len(l_r1) != len(l_r2):
+    return False
+  for c_idx in range(len(l_r1)):
+    l_e1 = l_r1[c_idx]
+    l_e2 = l_r2[c_idx]
+    if l_e1.m_v1 != l_e2.m_v1:
+      return False
+    if l_e1.m_v2 != l_e2.m_v2:
+      return False
+    if l_e1.m_weight != l_e2.m_weight:
+      return False
+
+  l_g2 = RandMstEdges(p_adj)
+  l_r2 = l_g2.run()
+  l_r2 = sorted(l_r2, key=lambda x:x.m_weight)
+
+  if len(l_r1) != len(l_r2):
+    return False
+  for c_idx in range(len(l_r1)):
+    l_e1 = l_r1[c_idx]
+    l_e2 = l_r2[c_idx]
+    if l_e1.m_v1 != l_e2.m_v1:
+      return False
+    if l_e1.m_v2 != l_e2.m_v2:
+      return False
+    if l_e1.m_weight != l_e2.m_weight:
+      return False
+
   return True
 
 # Mesure le temps d execution
-def bench(p_adj):
+def bench(p_adj, p_res = None):
   #print("------------------------------")
-  l_g2 = RandMst(p_adj)
-  l_g2v = l_g2.componentCount()
-  l_g2e = len(l_g2.m_edges)
-  l_start = datetime.now()
-  l_r2 = l_g2.run()
-  l_end = datetime.now()
-  l_r2 = sorted(l_r2, key=lambda x:x.m_weight)
-  print("r", sum([x.m_weight for x in l_r2]), "v:", l_g2v, "e:", l_g2e, "s:", (l_end - l_start).total_seconds())
-
-  #l_g1 = Kruskal(p_adj)
-  #l_start = datetime.now()
-  #l_r1 = sorted(l_g1.run(), key=lambda x:x.m_weight)
-  #l_end = datetime.now()
-  #print("k", sum([x.m_weight for x in l_r1]), "v:", l_g2v, "e:", l_g2e, "s:", (l_end - l_start).total_seconds())
-
-  #l_g1 = Boruvka(p_adj)
-  #l_start = datetime.now()
-  #l_r1 = sorted(l_g1.run(), key=lambda x:x.m_weight)
-  #l_end = datetime.now()
-  #print("b", sum([x.m_weight for x in l_r1]), "v:", l_g2v, "e:", l_g2e, "s:", (l_end - l_start).total_seconds())
-
-  sys.stdout.flush()
-
+  for c_g in [ Boruvka(p_adj), RandMst(p_adj)]: #, RandMstEdges(p_adj), RandMstTests(p_adj) ]:
+    l_v = c_g.componentCount()
+    l_e = len(p_adj)
+    l_start = datetime.now()
+    l_r = c_g.run()
+    l_end = datetime.now()
+    if None != p_res:
+      l_key = (c_g.getName(), l_v, l_e)
+      l_val = (l_end - l_start).total_seconds()
+      if l_key in p_res:
+        p_res[l_key].append(l_val)
+      else:
+        p_res[l_key] = [l_val]
+      print(".", end="")
+      sys.stdout.flush()
+    else:
+      print(c_g.getName(), l_v, l_e, (l_end - l_start).total_seconds())
+      sys.stdout.flush()
 
 # Convertit le graphe random en lettres et ajout du poids unique
 def toString(p_val):
@@ -124,7 +154,7 @@ for c_adj in [
       ('BC', 'NC', 109), ('DC', 'IC', 110), ('EC', 'UC', 111), ('FC', 'ED', 112), ('FC', 'VD', 113), ('GC', 'FD', 114), ('JC', 'ED', 115), ('KC', 'XC', 116), ('OC', 'SD', 117), ('PC', 'VC', 118),
       ('PC', 'KD', 119), ('PC', 'XD', 120), ('QC', 'AD', 121), ('TC', 'BD', 122), ('TC', 'ID', 123), ('TC', 'QD', 124), ('YC', 'CD', 125), ('DD', 'TD', 126)]
 ]:
-  # comparasion sur des graphes en dur
+  # comparaison sur des graphes en dur
   if 2 > len(sys.argv):
     if compare(c_adj):
       #print("ok")
@@ -133,7 +163,7 @@ for c_adj in [
       print("### Error")
       sys.exit(1)
 
-# comparasion sur des graphes randomw
+# comparaison sur des graphes random
 if 2 > len(sys.argv):
   for c_vc in [100, 200, 400, 800, 1600, 3200]:
     print()
@@ -152,12 +182,19 @@ if 2 > len(sys.argv):
 # mesure de temps sur des graphes random
 if 2 <= len(sys.argv):
   for x in sys.argv[1:]:
+    print()
     l_nodeCount = int(x)
-    l_probas = [ x / 10.0 for x in range(1, 11) ]
+    l_probas = [ 0.1, 0.5, 0.85 ] #[ x / 10.0 for x in range(1, 11) ]
+    l_count = 6
+    l_times = {}
 
     for c_proba in sorted(l_probas):
       l_adj = generate(l_nodeCount, c_proba)
-      for i in range(10):
-        bench(l_adj)
-
-
+      for i in range(l_count):
+        bench(l_adj, l_times)
+    print()
+    for c_key in sorted(l_times.keys()):
+      l_time = l_times[c_key]
+      if len(l_time) > 5:
+        l_time = sorted(l_time)[1:-1]
+      print(c_key[0], c_key[1], c_key[2], sum(l_time) / len(l_time))
