@@ -113,7 +113,14 @@ class RandMst:
     #self.printEdges("  ", sorted(self.m_edges, key=lambda x:x.m_weight))
     if 1 >= self.componentCount():
       return set()
-
+    
+ # The idea of this step is to reduce the number of vertices of the
+ # graph. It guarantees that the number of vertices after the step is <= N / 2.
+ # It returns the reduced problem and the id's of the edges that were contracted
+ #in the current step.
+ # Assumptions: The graph P.graph_edges is connected.
+ # Complexity: O(n + m)
+  
     self.boruvkaStep()
     #if 0 == p_level: print("-b1", self.componentCount(), len(self.m_edges), p_level, time.time())
     #self.printEdges("s1", sorted(self.m_mst, key=lambda x:x.m_weight))
@@ -175,7 +182,10 @@ class RandMst:
     #l_addFlight = 0
     #l_addConnect = 0
 
-    # build graph
+    # Building the component graph, a graph formed by each node and the
+	  # edge incident to it that has the smallest cost
+    
+    
     l_res = RandMst([])
     l_res.m_vertices = [None for x in self.m_vertices]
     l_res.m_names    = self.m_names
